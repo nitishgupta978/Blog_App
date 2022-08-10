@@ -1,19 +1,5 @@
-// import 'package:flutter/src/foundation/key.dart';
-// import 'package:flutter/src/widgets/framework.dart';
+// ignore: file_names
 
-// class BackGroundLogo extends StatefulWidget {
-//   const BackGroundLogo({Key? key}) : super(key: key);
-
-//   @override
-//   State<BackGroundLogo> createState() => _BackGroundLogoState();
-// }
-
-// class _BackGroundLogoState extends State<BackGroundLogo> {
-//   @override
-//   Widget build(BuildContext context) {
-
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -26,7 +12,7 @@ class BackGroundLogo extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Image.network(
+        Image.asset(
           "assets/images/InstLogo2.png",
           width: 180,
           //height: 100,

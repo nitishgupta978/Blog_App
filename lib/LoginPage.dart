@@ -2,6 +2,7 @@
 // import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:singup_app/BackGroundLogo.dart';
+import 'package:singup_app/main.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'BackGroundLogo.dart';
 
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(title: 'Sing in Page'),
+      home: const SingUpPage(title: 'Sing in Page'),
     );
   }
 }
@@ -89,8 +90,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 TextButton(
-                  child: const Text('Sing in'),
-                  onPressed: () {},
+                  child: const Text('Login'),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const SingUpPage(title: 'Sing up Page');
+                    }));
+                  },
                 ),
                 const SizedBox(
                   height: 30.0,
@@ -99,9 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                     text: const TextSpan(
                   text: "here you sing in your account?",
                   // ignore: unnecessary_const
-                  children: <TextSpan>[
+                  children: const <TextSpan>[
                     TextSpan(
-                        text: 'Sign in',
+                        text: 'Sign Up',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.cyan)),
                   ],
