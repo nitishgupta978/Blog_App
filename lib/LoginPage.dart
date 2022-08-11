@@ -1,30 +1,9 @@
-// import 'package:flutter/src/foundation/key.dart';
-// import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:singup_app/BackGroundLogo.dart';
-import 'package:singup_app/main.dart';
+import 'package:singup_app/BlogPage.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'BackGroundLogo.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Sing in Page',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const SingUpPage(title: 'Sing in Page'),
-    );
-  }
-}
+import 'SignupPage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required String title}) : super(key: key);
@@ -36,20 +15,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            body: Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-            colors: [Color(0XFFFFB6C1), Color(0XFFFFB6C1)],
-            begin: FractionalOffset.topLeft,
-            end: FractionalOffset.bottomCenter,
-            stops: [0.0, 0.8],
-            tileMode: TileMode.mirror),
-      ),
-      child: SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login Page')),
+      body: SingleChildScrollView(
         child: Center(
           child: SizedBox(
             width: 450,
@@ -89,12 +57,24 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                TextButton(
+                ElevatedButton(
                   child: const Text('Login'),
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const SingUpPage(title: 'Sing up Page');
+                      return const BlogPage(title: 'Sing up Page');
+                    }));
+                  },
+                ),
+                const SizedBox(
+                  height: 20.0,
+                ),
+                TextButton(
+                  child: const Text('Sign up'),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const SingUpPage(title: 'Sign up Page');
                     }));
                   },
                 ),
@@ -117,6 +97,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
-    )));
+    );
   }
 }
