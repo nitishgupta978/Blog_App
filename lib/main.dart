@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:singup_app/BackGroundLogo.dart';
 import 'package:singup_app/LoginPage.dart';
-import 'package:singup_app/BlogPage.dart';
-import 'package:velocity_x/velocity_x.dart';
-import 'BackGroundLogo.dart';
 // import 'singup_app/asserts/InstLogo2.png';
 
 void main() {

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:singup_app/LoginPage.dart';
+
+import 'blogDetailsPage.dart';
 
 class BlogPage extends StatefulWidget {
   const BlogPage({Key? key, required String title}) : super(key: key);
 
   @override
   State<BlogPage> createState() => _BlogPageState();
+}
+
+class User {
+  final String urlAvatar;
+
+  const User({required this.urlAvatar});
 }
 
 class _BlogPageState extends State<BlogPage> {
@@ -29,7 +36,7 @@ class _BlogPageState extends State<BlogPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const LoginPage(title: 'Sing up Page');
+                      return const BlogDetails(title: 'Sing up Page');
                     }));
                   },
                 )),
@@ -47,7 +54,7 @@ class _BlogPageState extends State<BlogPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const LoginPage(title: 'Sing up Page');
+                      return const BlogDetails(title: 'Sing up Page');
                     }));
                   },
                 )),
@@ -65,7 +72,7 @@ class _BlogPageState extends State<BlogPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const LoginPage(title: 'Sing up Page');
+                      return const BlogDetails(title: 'Sing up Page');
                     }));
                   },
                 )),
@@ -83,7 +90,7 @@ class _BlogPageState extends State<BlogPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const LoginPage(title: 'Sing up Page');
+                      return const BlogDetails(title: 'Sing up Page');
                     }));
                   },
                 )),
@@ -101,7 +108,7 @@ class _BlogPageState extends State<BlogPage> {
                   onPressed: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return const LoginPage(title: 'Sing up Page');
+                      return const BlogDetails(title: 'Blog Feed');
                     }));
                   },
                 )),
