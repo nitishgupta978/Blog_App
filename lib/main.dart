@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:singup_app/LoginPage.dart';
+import 'package:singup_app/auth/screens/login_page.dart';
 // import 'singup_app/asserts/InstLogo2.png';
 
 void main() {

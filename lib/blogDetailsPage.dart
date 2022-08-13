@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:singup_app/blogs/datasource/blog_repository.dart';
 
 class BlogDetails extends StatelessWidget {
-  const BlogDetails({Key? key, required String title}) : super(key: key);
+  const BlogDetails({Key? key, required String title, required Blog blog})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
