@@ -35,14 +35,13 @@ extension Validator on String? {
   }
 }
 
-// class Validators {
-//   static String? validateEmail(String? value) {
-//     final emailRegex = RegExp(
-//         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-//     if (value != null && !emailRegex.hasMatch(value)) {
-//       return "Not a valid email";
-//     }
-//     return null;
-//   }
-// }
-
+class Validators {
+  static String? validateEmail(String? value) {
+    final emailRegex = RegExp(
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+    if (value != null && !emailRegex.hasMatch(value)) {
+      return "Not a valid email";
+    }
+    return null;
+  }
+}

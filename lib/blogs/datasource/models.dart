@@ -1,22 +1,43 @@
-import 'blog_repository.dart';
+import 'dart:math';
 
-class BlogRepository {
-  static BlogRepository? _instance;
-  BlogRepository._(); // Private Constructor
-  factory BlogRepository() {
-    _instance ??= BlogRepository._(); // ??= is called Elvis Operator
-    return _instance!;
-  }
+class Blog {
+  final String title;
+  final String content;
+  final String imageUrl;
+  final Author author;
 
-  final List<Blog> _blogs = <Blog>[];
+  final DateTime updatedAt;
 
-  Future<List<Blog>> fetchAllBlogs() async {
-    await Future.delayed(const Duration(seconds: 2)); // Thread.sleep
-    return _blogs;
-  }
+  const Blog({
+    required this.title,
+    required this.content,
+    required this.imageUrl,
+    required this.author,
+    required this.updatedAt,
+  });
 
-  Future<void> addBlog(Blog blog) async {
-    await Future.delayed(const Duration(seconds: 2));
-    _blogs.add(blog);
-  }
+  Map toJson() => {
+        'title': title,
+        'content': content,
+        'imageUrl': Uri.encodeFull(imageUrl),
+        'email': Uri.encodeFull(author.email),
+      };
+
+  factory Blog.fromJson(Map<String, dynamic> json) => Blog(
+        title: json['title'],
+        content: json['content'],
+        imageUrl: json['imageurl'],
+        author: Author(email: json['email'], photoUrl: ""),
+        updatedAt: DateTime.parse(json["updatedat"]),
+      );
+}
+
+class Author {
+  final String email;
+  final String photoUrl;
+
+  const Author({
+    required this.email,
+    required this.photoUrl,
+  });
 }

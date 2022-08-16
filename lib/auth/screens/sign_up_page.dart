@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:singup_app/auth/datasource/auth_repository.dart';
 import 'package:singup_app/auth/logic/validators.dart';
+import 'package:singup_app/back_ground_logo.dart';
 import 'package:singup_app/common/widgets/vertical_spacing.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-import '../../back_ground_logo.dart';
 import 'login_page.dart';
 
 class SingUpPage extends StatefulWidget {
@@ -16,10 +17,47 @@ class SingUpPage extends StatefulWidget {
 }
 
 class _SingUpPageState extends State<SingUpPage> {
-  final GlobalKey<FormState> formKey = GlobalKey();
-
-  final TextEditingController samepasswordController = TextEditingController();
+  final AuthRepository repo = AuthRepository();
+  final GlobalKey<FormState> formKey =
+      GlobalKey(); //use for validation perpuse in SingUpPage
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  // final TextEditingController samepasswordController = TextEditingController();
   bool showPassword = false;
+
+  Future<void> signUp() async {
+    final isSuccess = await repo.signUp(
+      firstName: _firstNameController.text,
+      lastName: _lastNameController.text,
+      email: _emailController.text,
+      password: _passwordController.text,
+      // samePassword: samepasswordController.text,
+    );
+
+    if (mounted) {
+      if (isSuccess) {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const LoginPage(
+                  title: '',
+                )));
+      } else {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("Some error occured!")));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    // samepasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +74,12 @@ class _SingUpPageState extends State<SingUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const BackGroundLogo(),
-                    const HeightBox(10),
+                    const HeightBox(5),
                     const VerticalSpacing(),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: TextFormField(
+                        controller: _firstNameController,
                         validator: (value) {
                           return value?.validateAsName();
                         },
@@ -59,6 +98,7 @@ class _SingUpPageState extends State<SingUpPage> {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: TextFormField(
+                        controller: _lastNameController,
                         validator: (value) {
                           return value?.validateAsName();
                         },
@@ -77,6 +117,7 @@ class _SingUpPageState extends State<SingUpPage> {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: TextFormField(
+                        controller: _emailController,
                         validator: (value) {
                           return value?.validateAsEmail();
                         },
@@ -95,8 +136,9 @@ class _SingUpPageState extends State<SingUpPage> {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: TextFormField(
+                        controller: _passwordController,
                         obscureText: true, //for hide password
-                        controller: samepasswordController,
+                        // controller: samepasswordController,
                         validator: (value) {
                           return value?.validateAsPassword();
                         },
@@ -126,10 +168,11 @@ class _SingUpPageState extends State<SingUpPage> {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: TextFormField(
+                        controller: _passwordController,
                         obscureText: !showPassword, //for hide password
                         validator: (value) {
                           return value?.validateSameAsPassword(
-                              samepasswordController.text);
+                              _passwordController.text);
                         },
 
                         decoration: InputDecoration(
@@ -157,14 +200,7 @@ class _SingUpPageState extends State<SingUpPage> {
                       child: const Text('Submit'),
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const LoginPage(title: 'LoginPage');
-                          }));
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Please check the inputs')));
+                          signUp();
                         }
                       },
                     ),

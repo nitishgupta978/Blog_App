@@ -18,7 +18,6 @@ class InputField extends StatelessWidget {
     this.validator,
     required TextInputType keyboardType,
     required InputDecoration decoration,
-    // required InputDecoration decoration,
   }) : super(key: key);
 
   @override

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:singup_app/auth/datasource/auth_repository.dart';
+import 'package:singup_app/back_ground_logo.dart';
 import 'package:singup_app/blogs/datasource/blog_repository.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
-import 'package:singup_app/common/widgets/input_field.dart';
 import 'package:singup_app/common/widgets/vertical_spacing.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class AddBlogPage extends StatefulWidget {
   const AddBlogPage({Key? key, required String title}) : super(key: key);
@@ -13,6 +15,7 @@ class AddBlogPage extends StatefulWidget {
 
 class _AddBlogPageState extends State<AddBlogPage> {
   final BlogRepository repo = BlogRepository();
+  final AuthRepository _authRepo = AuthRepository();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _imageController = TextEditingController();
@@ -25,8 +28,8 @@ class _AddBlogPageState extends State<AddBlogPage> {
         title: _titleController.text,
         content: _contentController.text,
         imageUrl: _imageController.text,
-        author: const Author(email: 'nitish@spice.com', photoUrl: ""),
-        updateOn: "12-Aug-2022",
+        author: Author(email: _authRepo.currentUser!.email, photoUrl: ""),
+        updatedAt: DateTime.now(),
       );
 
       setState(() {
@@ -40,8 +43,9 @@ class _AddBlogPageState extends State<AddBlogPage> {
         _isLoading = false;
       });
     }
-
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -58,32 +62,48 @@ class _AddBlogPageState extends State<AddBlogPage> {
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            vertical: 48.0,
+            vertical: 30.0,
             horizontal: MediaQuery.of(context).size.width / 6,
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const BackGroundLogo(),
+              const HeightBox(20),
               TextFormField(
                 controller: _titleController,
                 decoration: const InputDecoration(
-                  hintText: 'Title',
-                  labelText: 'Title',
+                  filled: true,
+                  fillColor: Colors.white60,
+                  label: Text('Titel'),
+                  hintText: 'eg. Beauty of nature',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
                 ),
               ),
               const VerticalSpacing(),
               TextFormField(
                 controller: _contentController,
                 decoration: const InputDecoration(
-                  hintText: 'Title',
-                  labelText: 'Title',
+                  filled: true,
+                  fillColor: Colors.white60,
+                  label: Text('context'),
+                  hintText: 'eg. Write your Blog details ',
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
                 ),
               ),
               const VerticalSpacing(),
               TextFormField(
                 controller: _imageController,
                 decoration: const InputDecoration(
-                  hintText: 'Title',
-                  labelText: 'Title',
+                  filled: true,
+                  fillColor: Colors.white60,
+                  label: Text('ImageUrl'),
+                  hintText:
+                      "eg. https://thumbs.dreamstime.com/b/climate-change-concept-image-landscape-green-grass-drought-land-extreme-dry-woman-walking-field-50990297.jpg",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
                 ),
               ),
               const VerticalSpacing(),

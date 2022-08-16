@@ -1,72 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:singup_app/blogs/datasource/blog_repository.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
-import 'package:singup_app/blogs/screens/blogs.dart';
+import 'package:singup_app/common/widgets/vertical_spacing.dart';
 
-import '../../blogDetailsPage.dart';
-
-class BlogFeed extends StatefulWidget {
-  const BlogFeed({Key? key, required String title}) : super(key: key);
-
-  @override
-  State<BlogFeed> createState() => _BlogFeedState();
-}
-
-class _BlogFeedState extends State<BlogFeed> {
-  final BlogRepository repo = BlogRepository();
-
-  List<Blog> _blogs = [];
-  bool _isLoading = false;
-
-  Future<void> fetchAllBlogs() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final List<Blog> blogs = await repo.fetchAllBlogs();
-    setState(() {
-      _blogs = blogs;
-      _isLoading = false;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchAllBlogs();
-  }
+class BlogDetails extends StatelessWidget {
+  final Blog blog;
+  const BlogDetails({Key? key, required this.blog, required String title})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Blog Page')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AddBlogPage()));
-          fetchAllBlogs();
-        },
-        child: const Icon(Icons.add),
+      appBar: AppBar(
+        title: Text(
+          blog.title,
+          style: const TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemBuilder: (context, index) => ListTile(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlogDetails(
-                        blog: _blogs[index],
-                        title: '',
-                      ),
-                    ),
-                  );
-                },
-                title: Text(_blogs[index].title),
-              ),
-              itemCount: _blogs.length,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(blog.updatedAt.toString()),
+                const SizedBox(
+                  width: 48,
+                ),
+                Text('by ${blog.author.email}')
+              ],
             ),
+            const VerticalSpacing(),
+            Image.network(blog.imageUrl),
+            const VerticalSpacing(),
+            Html(
+              data: blog.content,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
