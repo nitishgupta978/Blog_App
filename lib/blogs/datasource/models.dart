@@ -1,5 +1,3 @@
-import 'dart:math';
-
 class Blog {
   final String title;
   final String content;
