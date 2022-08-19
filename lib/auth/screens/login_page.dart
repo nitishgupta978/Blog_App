@@ -75,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
                       validator: (value) {
                         return value?.validateAsEmail();
                       },
-                      // keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         filled: true,
                         fillColor: Colors.white60,
@@ -173,11 +172,11 @@ class _LoginPageState extends State<LoginPage> {
                     launchUrlString("https://www.facebook.com");
                   },
                   icon: const Icon(
-                    Icons.facebook,
+                    FontAwesomeIcons.facebookF,
+                    color: Colors.blue, // Icons.facebook,
                     size: 30,
                   ),
-                  color: Colors.cyan,
-                  // size: Size.small,
+                  color: Colors.blue.shade900,
                 ),
                 IconButton(
                   onPressed: () {
@@ -192,7 +191,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 IconButton(
                   onPressed: () {
-                    // launchUrlString("https://www.twitter.com");
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const BlogFeed(
                               title: '',
@@ -200,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   icon: const Icon(
                     FontAwesomeIcons.blog,
-                    color: Colors.cyan,
+                    color: Colors.blueGrey,
                     size: 30,
                   ),
                   color: Colors.cyan,

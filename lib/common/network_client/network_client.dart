@@ -10,6 +10,10 @@ class NetworkClient {
     return http.get(Uri.parse('$_kBaseUrl/$endPoint'));
   }
 
+  static Future<http.Response> delete(String endPoint) async {
+    return http.delete(Uri.parse('$_kBaseUrl/$endPoint'));
+  }
+
   static Future<http.Response> post(String endPoint, {dynamic data}) async {
     return http.post(Uri.parse('$_kBaseUrl/$endPoint'), body: jsonEncode(data));
   }

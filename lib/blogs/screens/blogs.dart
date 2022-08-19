@@ -57,6 +57,18 @@ class _BlogFeedState extends State<BlogFeed> {
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5.0),
                 child: ListTile(
+                  subtitle: Text('by ${_blogs[index].author.email}'),
+                  trailing: IconButton(
+                    //for delete blogs line no 61 to 70s
+                    onPressed: () async {
+                      final isdelated =
+                          await repo.deleteBlog(_blogs[index].id!);
+                      if (isdelated) {
+                        fetchAllBlogs();
+                      }
+                    },
+                    icon: const Icon(Icons.delete),
+                  ),
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -71,6 +83,7 @@ class _BlogFeedState extends State<BlogFeed> {
                   },
                   leading: Image.network(_blogs[index].imageUrl),
                   title: Text(_blogs[index].title),
+                  tileColor: Colors.pink.shade50,
                 ),
               ),
               itemCount: _blogs.length,

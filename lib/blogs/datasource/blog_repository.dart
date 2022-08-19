@@ -29,4 +29,9 @@ class BlogRepository {
     final res = await NetworkClient.post('addBlog', data: blog.toJson());
     log(res.body);
   }
+
+  Future<bool> deleteBlog(int id) async {
+    final res = await NetworkClient.delete('deleteBlog?id=$id');
+    return res.statusCode == 200;
+  }
 }

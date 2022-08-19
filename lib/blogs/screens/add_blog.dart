@@ -23,7 +23,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
   bool _isLoading = false;
 
   Future<void> addBlog() async {
-    if (_titleController.text.length >= 10) {
+    if (_titleController.text.length >= 5) {
       final blog = Blog(
         title: _titleController.text,
         content: _contentController.text,
