@@ -35,7 +35,6 @@ class AuthRepository {
     required String password,
     required String firstName,
     required String lastName,
-    // required String samePassword,
   }) async {
     final response = await NetworkClient.post(
       'signup',
@@ -44,7 +43,7 @@ class AuthRepository {
         'password': password,
         'firstName': firstName,
         'lastName': lastName,
-        'againPassowrd': password,
+        // 'againPassowrd': password,
       },
     );
 

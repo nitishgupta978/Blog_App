@@ -1,3 +1,5 @@
+import 'dart:async';
+
 extension Validator on String? {
   String? validateAsEmail() {
     final emailRegex = RegExp(
@@ -35,13 +37,33 @@ extension Validator on String? {
   }
 }
 
-class Validators {
-  static String? validateEmail(String? value) {
-    final emailRegex = RegExp(
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-    if (value != null && !emailRegex.hasMatch(value)) {
-      return "Not a valid email";
+mixin Validators {
+  StreamTransformer<String?, String?> validateEmail =
+      StreamTransformer.fromHandlers(handleData: (event, sink) {
+    final error = event.validateAsEmail();
+    if (error != null) {
+      sink.addError(error);
+    } else {
+      sink.add(event); // confirming that entered value is a valid email
     }
-    return null;
-  }
+  });
+
+  StreamTransformer<String?, String?> validatePassword =
+      StreamTransformer.fromHandlers(handleData: (event, sink) {
+    final error = event.validateAsPassword();
+    if (error != null) {
+      sink.addError(error);
+    } else {
+      sink.add(event);
+    }
+  });
+
+  StreamTransformer<String?, String?> validateName =
+      StreamTransformer.fromHandlers(handleData: (event, sink) {
+    if (event == null || event.length < 2) {
+      sink.addError('Name must be of atleast 2 characters');
+    } else {
+      sink.add(event);
+    }
+  });
 }

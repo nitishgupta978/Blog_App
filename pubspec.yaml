@@ -40,6 +40,7 @@ dependencies:
   flutter_html: ^2.2.1
   url_launcher: ^6.1.5
   font_awesome_flutter: ^10.1.0
+  rxdart: ^0.27.5
 
   
 dev_dependencies:

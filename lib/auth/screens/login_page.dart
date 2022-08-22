@@ -1,15 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:singup_app/auth/datasource/auth_repository.dart';
-import 'package:singup_app/auth/logic/validators.dart';
+import 'package:singup_app/auth/logic/sign_in_bloc.dart';
+
+import 'package:singup_app/auth/screens/sign_up_page.dart';
 import 'package:singup_app/back_ground_logo.dart';
 import 'package:singup_app/blogs/screens/blogs.dart';
+import 'package:singup_app/common/widgets/input_field.dart';
 import 'package:singup_app/common/widgets/vertical_spacing.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../../back_ground_logo.dart';
-import 'sign_up_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required String title}) : super(key: key);
@@ -20,34 +21,17 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> formKey = GlobalKey();
-  final AuthRepository repo = AuthRepository();
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  bool showPassword = false;
-
-  Future<void> login() async {
-    final user = await repo.login(
-        email: _emailController.text, password: _passwordController.text);
-
-    if (mounted) {
-      if (user != null) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const BlogFeed(
-                  title: '',
-                )));
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("User not found")));
-      }
-    }
+  late final SignInBloc bloc;
+  @override
+  void initState() {
+    super.initState();
+    bloc = SignInBloc();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    bloc.dispose();
     super.dispose();
   }
 
@@ -68,64 +52,82 @@ class _LoginPageState extends State<LoginPage> {
                   const BackGroundLogo(),
                   const HeightBox(10),
                   const VerticalSpacing(),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: TextFormField(
-                      controller: _emailController,
-                      validator: (value) {
-                        return value?.validateAsEmail();
-                      },
-                      decoration: const InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white60,
-                        label: Text('email'),
-                        hintText: "abc@gmail.com",
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                      ),
-                    ),
-                  ),
-                  const VerticalSpacing(),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      validator: (value) {
-                        return value.validateAsPassword();
-                      },
-                      decoration: InputDecoration(
-                        suffixIcon: InkWell(
-                          child: showPassword
-                              ? const Icon(Icons.visibility_off)
-                              : const Icon(Icons.visibility),
-                          onTap: () {
-                            setState(() {
-                              // update the state of the widgets
-                              showPassword = !showPassword;
-                            });
-                          },
-                        ),
-                        filled: true,
-                        fillColor: Colors.white60,
-                        label: const Text('password'),
-                        hintText: "********",
-                        border: const OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    child: const Text('Login'),
-                    onPressed: () {
-                      login();
+                  StreamBuilder<String?>(
+                    stream: bloc.email.obs$,
+                    builder: (context, snapshot) {
+                      return InputField(
+                        onChanged: bloc.email.addValue,
+                        hintText: 'eg. abc@gmail.com',
+                        labelText: 'Email ID',
+                        errorText: snapshot.error as String?,
+                      );
                     },
                   ),
                   const SizedBox(
-                    height: 30.0,
+                    height: 15.0,
                   ),
+                  const VerticalSpacing(),
+                  StreamBuilder(
+                      stream: bloc.password.obs$,
+                      builder: (context, snapshot) {
+                        return StreamBuilder<bool>(
+                            stream: bloc.passwordObscure.obs$,
+                            initialData: true,
+                            builder: (context, obscureSnap) {
+                              return InputField(
+                                onChanged: bloc.password.addValue,
+                                suffixIcon: InkWell(
+                                  onTap: () {
+                                    bloc.passwordObscure
+                                        .addValue(!obscureSnap.data!);
+                                  },
+                                  // customBorder: const OutlineInputBorder(
+                                  //     borderRadius: BorderRadius.all(
+                                  //         Radius.circular(15.0))),
+                                  child: !obscureSnap.data!
+                                      ? const Icon(Icons.visibility_off)
+                                      : const Icon(Icons.visibility),
+                                ),
+                                obscureText: obscureSnap.data,
+                                errorText: snapshot.error as String?,
+                                hintText: 'eg. qasA012@fd',
+                                labelText: 'Password',
+                              );
+                            });
+                      }),
+                  const SizedBox(
+                    height: 10.0,
+                  ),
+                  const VerticalSpacing(),
+                  StreamBuilder<bool>(
+                      stream: bloc.validInputObs$,
+                      builder: (context, snapshot) {
+                        final isValid = snapshot.data ?? false;
+                        return ElevatedButton.icon(
+                          onPressed: isValid
+                              ? () async {
+                                  if (await bloc.signIn()) {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const BlogFeed(
+                                                  title: '',
+                                                )));
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('User not found')),
+                                    );
+                                  }
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(15.0),
+                          ),
+                          icon: const Icon(Icons.arrow_forward),
+                          label: const Text('Sign In'),
+                        );
+                      }),
                   const VerticalSpacing(),
                   RichText(
                     text: TextSpan(
