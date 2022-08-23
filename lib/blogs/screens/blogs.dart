@@ -21,7 +21,7 @@ class _BlogFeedState extends State<BlogFeed> {
     setState(() {
       _isLoading = true;
     });
-    final List<Blog> blogs = await repo.fetchAllBlogs();
+    final List<Blog> blogs = repo.fetchAllBlogs() as List<Blog>;
     setState(() {
       _blogs = blogs;
       _isLoading = false;

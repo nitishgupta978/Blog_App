@@ -26,7 +26,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
     bloc = SignInBloc();
+    bloc.email.obs$.listen(print, onError: (error, _) {
+      print(error);
+    });
   }
 
   @override
