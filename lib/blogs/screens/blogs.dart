@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:singup_app/blogs/datasource/blog_repository.dart';
+
 import 'package:singup_app/blogs/datasource/models.dart';
+import 'package:singup_app/blogs/logic_blog/blog_feed_bloc.dart';
 import 'package:singup_app/blogs/screens/add_blog.dart';
 import 'package:singup_app/blogs/screens/blog_details.dart';
 
@@ -12,27 +13,40 @@ class BlogFeed extends StatefulWidget {
 }
 
 class _BlogFeedState extends State<BlogFeed> {
-  final BlogRepository repo = BlogRepository();
-
-  List<Blog> _blogs = [];
-  bool _isLoading = false;
-
-  Future<void> fetchAllBlogs() async {
-    setState(() {
-      _isLoading = true;
-    });
-    final List<Blog> blogs = repo.fetchAllBlogs() as List<Blog>;
-    setState(() {
-      _blogs = blogs;
-      _isLoading = false;
-    });
-  }
+  late final BlogFeedBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    fetchAllBlogs();
+    bloc = BlogFeedBloc();
   }
+
+  @override
+  void dispose() {
+    bloc.dispose();
+    super.dispose();
+  }
+  // final BlogRepository repo = BlogRepository();
+
+  // List<Blog> _blogs = [];
+  // bool _isLoading = false;
+
+  // Future<void> fetchAllBlogs() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
+  //   final List<Blog> blogs = repo.fetchAllBlogs() as List<Blog>;
+  //   setState(() {
+  //     _blogs = blogs;
+  //     _isLoading = false;
+  //   });
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // fetchAllBlogs();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -44,50 +58,47 @@ class _BlogFeedState extends State<BlogFeed> {
               builder: (context) => const AddBlogPage(
                     title: '',
                   )));
-          fetchAllBlogs();
         },
         child: const Icon(Icons.add),
       ),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
+      body: StreamBuilder<List<Blog>>(
+          stream: bloc.blogs.obs$,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+
+            final blogs = snapshot.data!;
+            return ListView.builder(
               padding: const EdgeInsets.all(16.0),
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5.0),
-                child: ListTile(
-                  subtitle: Text('by ${_blogs[index].author.email}'),
-                  trailing: IconButton(
-                    //for delete blogs line no 61 to 70s
-                    onPressed: () async {
-                      final isdelated =
-                          await repo.deleteBlog(_blogs[index].id!);
-                      if (isdelated) {
-                        fetchAllBlogs();
-                      }
-                    },
-                    icon: const Icon(Icons.delete),
-                  ),
+              itemBuilder: (context, index) {
+                final blog = blogs[index];
+                return ListTile(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => Center(
-                          child: BlogDetails(
-                            blog: _blogs[index],
-                            title: '',
-                          ),
+                        builder: (context) => BlogDetails(
+                          blog: blog,
+                          title: '',
                         ),
                       ),
                     );
                   },
-                  leading: Image.network(_blogs[index].imageUrl),
-                  title: Text(_blogs[index].title),
-                  tileColor: Colors.pink.shade50,
-                ),
-              ),
-              itemCount: _blogs.length,
-            ),
+                  trailing: IconButton(
+                      onPressed: () => bloc.deleteBlog(blog.id!),
+                      icon: const Icon(Icons.delete)),
+                  leading: Image.network(
+                    blog.imageUrl,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  title: Text(blog.title),
+                  subtitle: Text('by ${blog.author.email}'),
+                );
+              },
+              itemCount: blogs.length,
+            );
+          }),
     );
   }
 }

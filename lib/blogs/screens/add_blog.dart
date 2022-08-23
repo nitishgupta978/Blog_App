@@ -81,6 +81,9 @@ class _AddBlogPageState extends State<AddBlogPage> {
                       borderRadius: BorderRadius.all(Radius.circular(10.0))),
                 ),
               ),
+              const SizedBox(
+                height: 10.0,
+              ),
               const VerticalSpacing(),
               TextFormField(
                 controller: _contentController,
@@ -92,6 +95,9 @@ class _AddBlogPageState extends State<AddBlogPage> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10.0))),
                 ),
+              ),
+              const SizedBox(
+                height: 10.0,
               ),
               const VerticalSpacing(),
               TextFormField(
