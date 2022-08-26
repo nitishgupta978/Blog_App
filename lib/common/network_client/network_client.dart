@@ -10,7 +10,7 @@ abstract class INetworkClient {
   Future<http.Response> post(String endPoint, {dynamic data});
 }
 
-abstract class NetworkClient implements INetworkClient {
+class NetworkClient implements INetworkClient {
   static const String _kBaseUrl =
       'https://spiceblogserver-production.up.railway.app';
 

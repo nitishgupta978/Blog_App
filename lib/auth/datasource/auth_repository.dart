@@ -1,9 +1,10 @@
 import 'dart:convert';
 
-import '../../common/network_client/network_client.dart';
-import 'model.dart';
+import 'package:singup_app/auth/datasource/i_auth_repository.dart';
+import 'package:singup_app/auth/datasource/model.dart';
+import 'package:singup_app/common/network_client/network_client.dart';
 
-class AuthRepository {
+class AuthRepository implements IAuthRepository {
   final INetworkClient _iNetworkClient;
   static AuthRepository? _instance;
   AuthRepository._(this._iNetworkClient); // Private Constructor
@@ -19,8 +20,10 @@ class AuthRepository {
   }
 
   User? _user;
+  @override
   User? get currentUser => _user;
 
+  @override
   Future<User?> login({required String email, required String password}) async {
     final response = await _iNetworkClient.post(
       'login',
@@ -37,6 +40,7 @@ class AuthRepository {
     return _user;
   }
 
+  @override
   Future<bool> signUp({
     required String email,
     required String password,
@@ -55,43 +59,5 @@ class AuthRepository {
     );
 
     return response.statusCode == 200;
-  }
-}
-
-class MockAutoRepo implements AuthRepository {
-  @override
-  final INetworkClient _iNetworkClient;
-  static MockAutoRepo? _instance;
-
-  MockAutoRepo._(this._iNetworkClient); // Private Constructor
-  factory MockAutoRepo() {
-    _instance ??=
-        MockAutoRepo._(MockNetworkClint()); // ??= is called Elvis Operator
-    return _instance!;
-  }
-  @override
-  User? _user;
-
-  @override
-  User? get currentUser => throw UnimplementedError();
-
-  @override
-  Future<User?> login({required String email, required String password}) async {
-    if (email == "nitish.gupta@spicemoney.com" && password == "0123456789") {
-      return User(
-          email: "nitish.gupta@spicemoney.com",
-          firstName: "Nitish Kumar",
-          lastName: "Gupta");
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> signUp(
-      {required String email,
-      required String password,
-      required String firstName,
-      required String lastName}) async {
-    return true;
   }
 }

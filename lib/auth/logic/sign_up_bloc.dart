@@ -22,7 +22,6 @@ class SignUpBloc with Validators {
   Stream<bool> get validInputObs$ => Rx.combineLatest(
       [firstName.obs$, lastName.obs$, email.obs$, password.obs$],
       (values) => true);
-
   Future<bool> signUp() => AuthRepository().signUp(
         email: email.value!,
         password: password.value!,
