@@ -1,4 +1,6 @@
-class Blog {
+import 'package:equatable/equatable.dart';
+
+class Blog with EquatableMixin {
   final String title;
   final String content;
   final String imageUrl;
@@ -31,9 +33,12 @@ class Blog {
         author: Author(email: json['email'], photoUrl: ""),
         updatedAt: DateTime.parse(json["updatedat"]),
       );
+
+  @override
+  List<Object?> get props => [id, title, content, imageUrl, author, updatedAt];
 }
 
-class Author {
+class Author with EquatableMixin {
   final String email;
   final String photoUrl;
 
@@ -41,4 +46,7 @@ class Author {
     required this.email,
     required this.photoUrl,
   });
+
+  @override
+  List<Object?> get props => [email, photoUrl];
 }

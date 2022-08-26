@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:singup_app/blogs/datasource/i_blog_repository.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
 import 'package:singup_app/common/network_client/network_client.dart';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class BlogRepository {
+class BlogRepository implements IBlogRepository {
   static BlogRepository? _instance;
   WebSocketChannel? _channel;
 
@@ -19,6 +20,7 @@ class BlogRepository {
     return _instance!;
   }
 
+  @override
   Stream<List<Blog>> fetchAllBlogs() async* {
     yield* _instance!._channel!.stream.map((event) {
       //final res = await NetworkClient.get('fetchAllBlogs');
@@ -31,11 +33,13 @@ class BlogRepository {
     });
   }
 
+  @override
   Future<void> addBlog(Blog blog) async {
     final res = await NetworkClient().post('addBlog', data: blog.toJson());
     log(res.body);
   }
 
+  @override
   Future<bool> deleteBlog(int id) async {
     final res = await NetworkClient().delete('deleteBlog?id=$id');
     return res.statusCode == 200;

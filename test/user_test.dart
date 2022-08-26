@@ -4,7 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:singup_app/auth/datasource/model.dart';
 
 void main() {
-  group('User test', () {
+  group('User Class test', () {
+    //model class
     test('.fromJson', () {
       const jsonStr =
           '{"email":"abc@xyz.com", "first name":"ABCD","last name":"xyz"}';
