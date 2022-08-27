@@ -8,46 +8,36 @@ void main() {
     final blogRepo = MockBlogRepo();
 
     test('stream test', () {
-      blogRepo.addBlog(Blog(
+      final blog = Blog(
+        id: 1,
         title: "title",
         content: "content",
         imageUrl: "imageUrl",
         author: const Author(email: 'email', photoUrl: 'photoUrl'),
         updatedAt: DateTime(2022),
-      ));
-      expectLater(blogRepo.fetchAllBlogs(), emitsInOrder([]));
-      blogRepo.addBlog(Blog(
-        title: "title",
-        content: "content",
-        imageUrl: "imageUrl",
-        author: const Author(email: 'email', photoUrl: 'photoUrl'),
-        updatedAt: DateTime(2022),
-      ));
+      );
+
+      blogRepo.addBlog(blog);
       expectLater(
           blogRepo.fetchAllBlogs(),
           emitsInOrder([
-            [
-              Blog(
-                  title: "title",
-                  content: "content",
-                  imageUrl: "imageUrl",
-                  author: const Author(email: 'email', photoUrl: 'photoUrl'),
-                  updatedAt: DateTime(2022))
-            ],
-            [
-              Blog(
-                  title: "title",
-                  content: "content",
-                  imageUrl: "imageUrl",
-                  author: const Author(email: 'email', photoUrl: 'photoUrl'),
-                  updatedAt: DateTime(2022)),
-              Blog(
-                  title: "title",
-                  content: "content",
-                  imageUrl: "imageUrl",
-                  author: const Author(email: 'email', photoUrl: 'photoUrl'),
-                  updatedAt: DateTime(2022))
-            ],
+            [blog],
+          ]));
+      final blog2 = blog.copyWith(id: 2);
+      blogRepo.addBlog(blog2);
+      expectLater(
+          blogRepo.fetchAllBlogs(),
+          emitsInOrder([
+            [blog],
+            [blog, blog2]
+          ]));
+      blogRepo.deleteBlog(1);
+      expectLater(
+          blogRepo.fetchAllBlogs(),
+          emitsInOrder([
+            [blog],
+            [blog, blog2],
+            [blog2]
           ]));
     });
   });
