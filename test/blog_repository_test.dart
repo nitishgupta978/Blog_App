@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
 
@@ -7,7 +9,7 @@ void main() {
   group("Blog Repository test", () {
     final blogRepo = MockBlogRepo();
 
-    test('stream test', () {
+    test('stream test', () async {
       final blog = Blog(
         id: 1,
         title: "title",
@@ -17,28 +19,27 @@ void main() {
         updatedAt: DateTime(2022),
       );
 
-      blogRepo.addBlog(blog);
-      expectLater(
-          blogRepo.fetchAllBlogs(),
-          emitsInOrder([
-            [blog],
-          ]));
       final blog2 = blog.copyWith(id: 2);
-      blogRepo.addBlog(blog2);
-      expectLater(
-          blogRepo.fetchAllBlogs(),
-          emitsInOrder([
-            [blog],
-            [blog, blog2]
-          ]));
-      blogRepo.deleteBlog(1);
-      expectLater(
-          blogRepo.fetchAllBlogs(),
-          emitsInOrder([
-            [blog],
-            [blog, blog2],
-            [blog2]
-          ]));
+      Future<void> addValues() async {
+        await blogRepo.addBlog(blog);
+        await blogRepo.addBlog(blog2);
+        await blogRepo.deleteBlog(1);
+        await blogRepo.addBlog(blog);
+      }
+
+      addValues();
+
+      final List<List<Blog>> expectedValues = [
+        [blog],
+        [blog, blog2],
+        [blog],
+        [blog2, blog]
+      ];
+      int i = 0;
+      blogRepo.fetchAllBlogs().listen(expectAsync1<void, List<Blog>>((Stream) {
+            expect(Stream, expectedValues[i]);
+            i++;
+          }, max: -1));
     });
   });
 }

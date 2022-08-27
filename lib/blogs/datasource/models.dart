@@ -44,7 +44,7 @@ class Blog with EquatableMixin {
     Author? author,
   }) =>
       Blog(
-          // if id ?? is null then it take value of that particular type value
+          // if id ?? is null then it take value of that particular type value and remove bilder plate
           id: id ?? this.id,
           title: title ?? this.title,
           content: content ?? this.content,
@@ -53,6 +53,12 @@ class Blog with EquatableMixin {
           updatedAt: updatedAt);
   @override
   List<Object?> get props => [id, title, content, imageUrl, author, updatedAt];
+  @override
+  String toString() {
+    final map = toJson();
+    map['id'] = id;
+    return map.toString();
+  }
 }
 
 class Author with EquatableMixin {
