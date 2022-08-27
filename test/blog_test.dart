@@ -41,7 +41,7 @@ void main() {
         "content": "content",
         "imageurl": "imageurl",
         "email":"email",
-        "updatedat":"2022-08-26T16:22:38Z"
+        "updatedat":"2022-08-27T08:34:39Z"
 }
 ''';
       final json = jsonDecode(jsonStr);
