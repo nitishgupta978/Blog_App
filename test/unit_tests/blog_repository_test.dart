@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
 
-import 'mocks/mock_blog_repo.dart';
+import '../mocks/mock_blog_repo.dart';
 
 void main() {
   group("Blog Repository test", () {

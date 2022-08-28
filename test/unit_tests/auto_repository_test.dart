@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:singup_app/auth/datasource/model.dart';
 
-import 'mocks/mock_auth_repository.dart';
+import '../mocks/mock_auth_repository.dart';
 
 void main() {
   group('AutoRepositry', () {

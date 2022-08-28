@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                   const HeightBox(10),
                   const VerticalSpacing(),
                   StreamBuilder<String?>(
+                    key: const ValueKey('email_input_field_builder'),
                     stream: bloc.email.obs$,
                     builder: (context, snapshot) {
                       return InputField(
