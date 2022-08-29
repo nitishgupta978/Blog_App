@@ -80,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                             initialData: true,
                             builder: (context, obscureSnap) {
                               return InputField(
+                                key: const ValueKey('password_input_fields'),
                                 onChanged: bloc.password.addValue,
                                 suffixIcon: InkWell(
                                   onTap: () {
@@ -109,6 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (context, snapshot) {
                         final isValid = snapshot.data ?? false;
                         return ElevatedButton.icon(
+                          key: const ValueKey('login_submit_button'),
                           onPressed: isValid
                               ? () async {
                                   if (await bloc.signIn()) {
