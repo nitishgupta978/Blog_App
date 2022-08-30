@@ -1,15 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:singup_app/auth/datasource/i_auth_repository.dart';
 import 'package:singup_app/auth/datasource/model.dart';
 
 import '../mocks/mock_auth_repository.dart';
 
 void main() {
-  group('AutoRepositry', () {
-    final MockAutoRepo repo = MockAutoRepo();
-
-    test('singleton check', () {
-      expect(repo, MockAutoRepo());
-    });
+  group('Auto Repositry Test', () {
+    final IAuthRepository repo = mockAuthRepo;
 
     //
     test('Login test', () async {
@@ -27,6 +24,16 @@ void main() {
       // expect(actual?.firstName, expected.firstName);
       // expect(actual?.lastName, expected.lastName);
       expect(actual, expected);
+    });
+    test('sign up test', () async {
+      expect(
+          await repo.signUp(
+            email: '',
+            password: '',
+            firstName: '',
+            lastName: '',
+          ),
+          true);
     });
   });
 }

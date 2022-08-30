@@ -1,57 +1,38 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:singup_app/auth/logic/sign_up_bloc.dart';
 
 import 'package:singup_app/back_ground_logo.dart';
 import 'package:singup_app/common/widgets/input_field.dart';
 import 'package:singup_app/common/widgets/vertical_spacing.dart';
+import 'package:singup_app/di.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import 'login_page.dart';
 
-class SingUpPage extends StatefulWidget {
-  const SingUpPage({Key? key, required this.title}) : super(key: key);
+final blocProvider = Provider((ref) => SignUpBloc(ref.watch(authRepoProvider)));
 
-  final String title;
+class SingUpPage extends ConsumerWidget {
+  const SingUpPage({Key? key}) : super(key: key);
 
-  @override
-  State<SingUpPage> createState() => _SingUpPageState();
-}
-
-class _SingUpPageState extends State<SingUpPage> {
-  final GlobalKey<FormState> formKey = GlobalKey();
-  late final SignUpBloc bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    bloc = SignUpBloc();
-  }
-
-  Future<void> signUp() async {
-    final isSuccess = await bloc.signUp();
-    if (mounted) {
-      if (isSuccess) {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const LoginPage(
-                  title: '',
-                )));
-      } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Some error occured!")));
-      }
+  Future<void> signUp(
+      Future<bool> Function() signUpFn, BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final isSuccess = await signUpFn();
+    if (isSuccess) {
+      Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const LoginPage(title: '')));
+    } else {
+      messenger
+          .showSnackBar(const SnackBar(content: Text("Some error occured!")));
     }
   }
 
   @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(blocProvider);
     return Scaffold(
         appBar: AppBar(title: const Text('Signup Page')),
         body: SingleChildScrollView(
@@ -59,7 +40,6 @@ class _SingUpPageState extends State<SingUpPage> {
             child: SizedBox(
               width: 450,
               child: Form(
-                key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +150,9 @@ class _SingUpPageState extends State<SingUpPage> {
                         builder: (context, snapshot) {
                           final isValid = snapshot.data ?? false;
                           return ElevatedButton.icon(
-                            onPressed: isValid ? signUp : null,
+                            onPressed: isValid
+                                ? () => signUp(bloc.signUp, context)
+                                : null,
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.all(16.0),
                             ),

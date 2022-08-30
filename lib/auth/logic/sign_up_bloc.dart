@@ -1,28 +1,25 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:singup_app/auth/datasource/auth_repository.dart';
+import 'package:singup_app/auth/datasource/i_auth_repository.dart';
 import 'package:singup_app/auth/logic/validators.dart';
 import 'package:singup_app/common/observable/observable.dart';
 
 class SignUpBloc with Validators {
-  late final Observable<String?> firstName;
-  late final Observable<String?> lastName;
-  late final Observable<String?> email;
-  late final Observable<String?> password;
-  late final Observable<bool> passwordObscure;
+  final IAuthRepository _authRepository;
 
-// Observable is class , define in common module
-  SignUpBloc() {
-    firstName = Observable(validator: validateName);
-    lastName = Observable(validator: validateName);
-    email = Observable(validator: validateEmail);
-    password = Observable(validator: validatePassword);
-    passwordObscure = Observable.seeded(true);
-  }
+  late final Observable<String?> firstName =
+      Observable(validator: validateName);
+  late final Observable<String?> lastName = Observable(validator: validateName);
+  late final Observable<String?> email = Observable(validator: validateEmail);
+  late final Observable<String?> password =
+      Observable(validator: validatePassword);
+  late final Observable<bool> passwordObscure = Observable.seeded(true);
+
+  SignUpBloc(this._authRepository);
 
   Stream<bool> get validInputObs$ => Rx.combineLatest(
       [firstName.obs$, lastName.obs$, email.obs$, password.obs$],
       (values) => true);
-  Future<bool> signUp() => AuthRepository().signUp(
+  Future<bool> signUp() => _authRepository.signUp(
         email: email.value!,
         password: password.value!,
         firstName: firstName.value!,

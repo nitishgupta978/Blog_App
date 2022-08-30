@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:singup_app/auth/logic/sign_in_bloc.dart';
 
@@ -8,46 +9,26 @@ import 'package:singup_app/back_ground_logo.dart';
 import 'package:singup_app/blogs/screens/blogs.dart';
 import 'package:singup_app/common/widgets/input_field.dart';
 import 'package:singup_app/common/widgets/vertical_spacing.dart';
+import 'package:singup_app/di.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '../../back_ground_logo.dart';
 
-class LoginPage extends StatefulWidget {
+final _blocProvider =
+    Provider((ref) => SignInBloc(ref.watch(authRepoProvider)));
+
+class LoginPage extends ConsumerWidget {
   const LoginPage({Key? key, required String title}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> formKey = GlobalKey();
-
-  late final SignInBloc bloc;
-  @override
-  void initState() {
-    super.initState();
-
-    bloc = SignInBloc();
-    // bloc.email.obs$.listen(print, onError: (error, _) {
-    //   print(error);
-    // });
-  }
-
-  @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(_blocProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Login Page')),
       body: Stack(
         children: [
           Center(
             child: SizedBox(
-              key: formKey,
               width: 450,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -55,86 +36,24 @@ class _LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   const BackGroundLogo(),
                   const HeightBox(10),
+                  //
                   const VerticalSpacing(),
-                  StreamBuilder<String?>(
-                    key: const ValueKey('email_input_field_builder'),
-                    stream: bloc.email.obs$,
-                    builder: (context, snapshot) {
-                      return InputField(
-                        onChanged: bloc.email.addValue,
-                        hintText: 'eg. abc@gmail.com',
-                        labelText: 'Email ID',
-                        errorText: snapshot.error as String?,
-                      );
-                    },
-                  ),
+                  const EmailInputWidget(), // only rebuild EmailInputWidget , SignInSubmitButton, and PasswordInputWidget
+                  //
                   const SizedBox(
                     height: 15.0,
                   ),
+                  //
                   const VerticalSpacing(),
-                  StreamBuilder(
-                      stream: bloc.password.obs$,
-                      builder: (context, snapshot) {
-                        return StreamBuilder<bool>(
-                            stream: bloc.passwordObscure.obs$,
-                            initialData: true,
-                            builder: (context, obscureSnap) {
-                              return InputField(
-                                key: const ValueKey('password_input_fields'),
-                                onChanged: bloc.password.addValue,
-                                suffixIcon: InkWell(
-                                  onTap: () {
-                                    bloc.passwordObscure
-                                        .addValue(!obscureSnap.data!);
-                                  },
-                                  // customBorder: const OutlineInputBorder(
-                                  //     borderRadius: BorderRadius.all(
-                                  //         Radius.circular(15.0))),
-                                  child: !obscureSnap.data!
-                                      ? const Icon(Icons.visibility_off)
-                                      : const Icon(Icons.visibility),
-                                ),
-                                obscureText: obscureSnap.data,
-                                errorText: snapshot.error as String?,
-                                hintText: 'eg. qasA012@fd',
-                                labelText: 'Password',
-                              );
-                            });
-                      }),
+                  const PasswordInputWidget(),
+                  //
                   const SizedBox(
                     height: 10.0,
                   ),
+                  //
                   const VerticalSpacing(),
-                  StreamBuilder<bool>(
-                      stream: bloc.validInputObs$,
-                      builder: (context, snapshot) {
-                        final isValid = snapshot.data ?? false;
-                        return ElevatedButton.icon(
-                          key: const ValueKey('login_submit_button'),
-                          onPressed: isValid
-                              ? () async {
-                                  if (await bloc.signIn()) {
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const BlogFeed(
-                                                  title: '',
-                                                )));
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('User not found')),
-                                    );
-                                  }
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(15.0),
-                          ),
-                          icon: const Icon(Icons.arrow_forward),
-                          label: const Text('Sign In'),
-                        );
-                      }),
+                  const SignInSubmitButton(),
+                  //
                   const VerticalSpacing(),
                   RichText(
                     text: TextSpan(
@@ -149,9 +68,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ..onTap = () {
                                   Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
-                                        builder: (context) => const SingUpPage(
-                                              title: '',
-                                            )),
+                                        builder: (context) =>
+                                            const SingUpPage()),
                                   );
                                 }),
                           const TextSpan(text: 'instead.'),
@@ -217,6 +135,106 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class SignInSubmitButton extends ConsumerWidget {
+  const SignInSubmitButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(_blocProvider);
+    return StreamBuilder<bool>(
+        stream: bloc.validInputObs$,
+        builder: (context, snapshot) {
+          final isValid = snapshot.data ?? false;
+          return ElevatedButton.icon(
+            key: const ValueKey('login_submit_button'),
+            onPressed: isValid
+                ? () async {
+                    if (await bloc.signIn()) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const BlogFeed(
+                                title: '',
+                              )));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('User not found')),
+                      );
+                    }
+                  }
+                : null,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(15.0),
+            ),
+            icon: const Icon(Icons.arrow_forward),
+            label: const Text('Sign In'),
+          );
+        });
+  }
+}
+
+class PasswordInputWidget extends ConsumerWidget {
+  const PasswordInputWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(_blocProvider);
+    return StreamBuilder(
+        stream: bloc.password.obs$,
+        builder: (context, snapshot) {
+          return StreamBuilder<bool>(
+              stream: bloc.passwordObscure.obs$,
+              initialData: true,
+              builder: (context, obscureSnap) {
+                return InputField(
+                  key: const ValueKey('password_input_fields'),
+                  onChanged: bloc.password.addValue,
+                  suffixIcon: InkWell(
+                    onTap: () {
+                      bloc.passwordObscure.addValue(!obscureSnap.data!);
+                    },
+                    // customBorder: const OutlineInputBorder(
+                    //     borderRadius: BorderRadius.all(
+                    //         Radius.circular(15.0))),
+                    child: !obscureSnap.data!
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
+                  ),
+                  obscureText: obscureSnap.data,
+                  errorText: snapshot.error as String?,
+                  hintText: 'eg. qasA012@fd',
+                  labelText: 'Password',
+                );
+              });
+        });
+  }
+}
+
+class EmailInputWidget extends ConsumerWidget {
+  const EmailInputWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(_blocProvider);
+    return StreamBuilder<String?>(
+      key: const ValueKey('email_input_field_builder'),
+      stream: bloc.email.obs$,
+      builder: (context, snapshot) {
+        return InputField(
+          onChanged: bloc.email.addValue,
+          hintText: 'eg. abc@gmail.com',
+          labelText: 'Email ID',
+          errorText: snapshot.error as String?,
+        );
+      },
     );
   }
 }

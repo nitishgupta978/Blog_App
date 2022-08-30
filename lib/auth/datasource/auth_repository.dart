@@ -6,18 +6,8 @@ import 'package:singup_app/common/network_client/network_client.dart';
 
 class AuthRepository implements IAuthRepository {
   final INetworkClient _iNetworkClient;
-  static AuthRepository? _instance;
-  AuthRepository._(this._iNetworkClient); // Private Constructor
-  factory AuthRepository() {
-    _instance ??=
-        AuthRepository._(NetworkClient()); // ??= is called Elvis Operator
-    return _instance!;
-  }
-  factory AuthRepository.mock() {
-    _instance ??=
-        AuthRepository._(MockNetworkClint()); // ??= is called Elvis Operator
-    return _instance!;
-  }
+
+  AuthRepository(this._iNetworkClient); // Private Constructor
 
   User? _user;
   @override

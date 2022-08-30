@@ -1,55 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:singup_app/blogs/datasource/models.dart';
 import 'package:singup_app/blogs/logic_blog/blog_feed_bloc.dart';
 import 'package:singup_app/blogs/screens/add_blog.dart';
 import 'package:singup_app/blogs/screens/blog_details.dart';
+import 'package:singup_app/di.dart';
 
-class BlogFeed extends StatefulWidget {
+final _blocProvider = Provider<BlogFeedBloc>((ref) {
+  return BlogFeedBloc(ref.watch(blogRepoProvider));
+});
+final _blogFeedProvider =
+    StreamProvider((ref) => ref.watch(_blocProvider).blogs.obs$);
+
+class BlogFeed extends ConsumerWidget {
   const BlogFeed({Key? key, required String title}) : super(key: key);
 
   @override
-  State<BlogFeed> createState() => _BlogFeedState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bloc = ref.watch(_blocProvider);
 
-class _BlogFeedState extends State<BlogFeed> {
-  late final BlogFeedBloc bloc;
-
-  @override
-  void initState() {
-    super.initState();
-    bloc = BlogFeedBloc();
-  }
-
-  @override
-  void dispose() {
-    bloc.dispose();
-    super.dispose();
-  }
-  // final BlogRepository repo = BlogRepository();
-
-  // List<Blog> _blogs = [];
-  // bool _isLoading = false;
-
-  // Future<void> fetchAllBlogs() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-  //   final List<Blog> blogs = repo.fetchAllBlogs() as List<Blog>;
-  //   setState(() {
-  //     _blogs = blogs;
-  //     _isLoading = false;
-  //   });
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // fetchAllBlogs();
-  // }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('All Blogs')),
       floatingActionButton: FloatingActionButton(
@@ -61,15 +30,8 @@ class _BlogFeedState extends State<BlogFeed> {
         },
         child: const Icon(Icons.add),
       ),
-      body: StreamBuilder<List<Blog>>(
-          stream: bloc.blogs.obs$,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const CircularProgressIndicator();
-            }
-
-            final blogs = snapshot.data!;
-            return ListView.builder(
+      body: ref.watch(_blogFeedProvider).when(
+            data: (blogs) => ListView.builder(
               padding: const EdgeInsets.all(16.0),
               itemBuilder: (context, index) {
                 final blog = blogs[index];
@@ -97,8 +59,15 @@ class _BlogFeedState extends State<BlogFeed> {
                 );
               },
               itemCount: blogs.length,
-            );
-          }),
+            ),
+            error: (err, _) => Center(
+              child: Text(
+                '$err',
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+            loading: () => const CircularProgressIndicator(),
+          ),
     );
   }
 }

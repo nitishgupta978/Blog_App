@@ -1,21 +1,20 @@
-import 'package:singup_app/blogs/datasource/blog_repository.dart';
+import 'package:singup_app/blogs/datasource/i_blog_repository.dart';
 import 'package:singup_app/blogs/datasource/models.dart';
 import 'package:singup_app/common/observable/observable.dart';
 
 class BlogFeedBloc {
-  late final Observable<List<Blog>> blogs;
-  late final Observable<bool> isLoading;
+  final IBlogRepository _blogRepository;
+  late final Observable<List<Blog>> blogs = Observable.seeded(<Blog>[]);
+  late final Observable<bool> isLoading = Observable.seeded(false);
 
-  BlogFeedBloc() {
-    blogs = Observable.seeded(<Blog>[]);
-    isLoading = Observable.seeded(false);
-    BlogRepository().fetchAllBlogs().listen((event) {
+  BlogFeedBloc(this._blogRepository) {
+    _blogRepository.fetchAllBlogs().listen((event) {
       blogs.addValue(event);
     });
   }
 
   Future<void> deleteBlog(int id) async {
-    await BlogRepository().deleteBlog(id);
+    await _blogRepository.deleteBlog(id);
   }
 
   void dispose() {

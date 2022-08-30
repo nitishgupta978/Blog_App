@@ -7,22 +7,24 @@ import 'package:singup_app/common/network_client/network_client.dart';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+// abstract class IBlogRepository {
+//   Stream<List<Blog>> fetchAllBlogs();
+//   Future<void> addBlog(Blog blog);
+//   Future<bool> deleteBlog(int id);
+// }
+
 class BlogRepository implements IBlogRepository {
-  static BlogRepository? _instance;
+  final INetworkClient _iNetworkClient;
   WebSocketChannel? _channel;
 
-  BlogRepository._(); // Private Constructor
-  factory BlogRepository() {
-    _instance ??= BlogRepository._(); // ??= is called Elvis Operator
-
-    _instance!._channel ??= WebSocketChannel.connect(
+  BlogRepository(this._iNetworkClient) {
+    _channel ??= WebSocketChannel.connect(
         Uri.parse('wss://spiceblogserver-production.up.railway.app/ws'));
-    return _instance!;
   }
 
   @override
   Stream<List<Blog>> fetchAllBlogs() async* {
-    yield* _instance!._channel!.stream.map((event) {
+    yield* _channel!.stream.map((event) {
       //final res = await NetworkClient.get('fetchAllBlogs');
       try {
         final data = json.decode(event);
