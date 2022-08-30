@@ -18,6 +18,7 @@ class AddBlogBloc with Validators {
   late final Observable<bool> isLoading = Observable.seeded(false);
 
   AddBlogBloc(this._blogRepository, this._authRepository);
+
   Stream<bool> get validInputObs$ => Rx.combineLatest(
       [title.obs$, imgUrl.obs$, content.obs$], (values) => true);
 

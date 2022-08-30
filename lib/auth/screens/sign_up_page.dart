@@ -47,103 +47,39 @@ class SingUpPage extends ConsumerWidget {
                     const BackGroundLogo(),
                     const HeightBox(5),
                     const VerticalSpacing(),
-                    StreamBuilder<String?>(
-                        stream: bloc.firstName.obs$,
-                        builder: (context, snapshot) {
-                          return InputField(
-                            onChanged: bloc.firstName.addValue,
-                            labelText: 'First Name',
-                            errorText: snapshot.error as String?,
-                          );
-                        }),
+
+                    FirstNameInputField(bloc: bloc),
                     const SizedBox(
                       height: 10.0,
                     ),
+
                     const VerticalSpacing(),
-                    StreamBuilder<String?>(
-                        stream: bloc.lastName.obs$,
-                        builder: (context, snapshot) {
-                          return InputField(
-                            onChanged: bloc.lastName.addValue,
-                            labelText: 'Last Name',
-                            errorText: snapshot.error as String?,
-                          );
-                        }),
+                    LastNameInputFiled(bloc: bloc),
                     const SizedBox(
                       height: 10.0,
                     ),
+
                     const VerticalSpacing(),
-                    StreamBuilder<String?>(
-                        stream: bloc.email.obs$,
-                        builder: (context, snapshot) {
-                          return InputField(
-                            onChanged: bloc.email.addValue,
-                            hintText: 'for e.g., abc@xyz.com',
-                            labelText: 'Email ID',
-                            errorText: snapshot.error as String?,
-                          );
-                        }),
+                    //
+                    EmailInputField(bloc: bloc),
+                    //
                     const SizedBox(
                       height: 10.0,
                     ),
+
                     const VerticalSpacing(),
-                    StreamBuilder<String?>(
-                        stream: bloc.password.obs$,
-                        builder: (context, snapshot) {
-                          return StreamBuilder<bool>(
-                              stream: bloc.passwordObscure.obs$,
-                              initialData: true,
-                              builder: (context, obscureSnap) {
-                                return InputField(
-                                  errorText: snapshot.error as String?,
-                                  onChanged: bloc.password.addValue,
-                                  suffixIcon: InkWell(
-                                    child: !obscureSnap.data!
-                                        ? const Icon(Icons.visibility_off)
-                                        : const Icon(Icons.visibility),
-                                    onTap: () {
-                                      bloc.passwordObscure
-                                          .addValue(!obscureSnap.data!);
-                                    },
-                                  ),
-                                  obscureText: obscureSnap.data,
-                                  hintText: 'eg.adA12@bv',
-                                  labelText: 'Password',
-                                );
-                              });
-                        }),
+                    PasswordInputField(bloc: bloc),
                     const SizedBox(
                       height: 10.0,
                     ),
+
                     const VerticalSpacing(),
-                    StreamBuilder<String?>(
-                        stream: bloc.password.obs$,
-                        builder: (context, snapshot) {
-                          return StreamBuilder<bool>(
-                              stream: bloc.passwordObscure.obs$,
-                              initialData: true,
-                              builder: (context, obscureSnap) {
-                                return InputField(
-                                  errorText: snapshot.error as String?,
-                                  onChanged: bloc.password.addValue,
-                                  suffixIcon: InkWell(
-                                    child: !obscureSnap.data!
-                                        ? const Icon(Icons.visibility_off)
-                                        : const Icon(Icons.visibility),
-                                    onTap: () {
-                                      bloc.passwordObscure
-                                          .addValue(!obscureSnap.data!);
-                                    },
-                                  ),
-                                  obscureText: obscureSnap.data,
-                                  hintText: 'eg.adA12@bv',
-                                  labelText: 're-enter password',
-                                );
-                              });
-                        }),
+
+                    RePasswordInputField(bloc: bloc),
                     const SizedBox(
                       height: 10.0,
                     ),
+                    //
                     const VerticalSpacing(),
                     StreamBuilder<bool>(
                         stream: bloc.validInputObs$,
@@ -188,5 +124,146 @@ class SingUpPage extends ConsumerWidget {
             ),
           ),
         ));
+  }
+}
+
+class FirstNameInputField extends StatelessWidget {
+  const FirstNameInputField({
+    Key? key,
+    required this.bloc,
+  }) : super(key: key);
+
+  final SignUpBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<String?>(
+        stream: bloc.firstName.obs$,
+        builder: (context, snapshot) {
+          return InputField(
+            onChanged: bloc.firstName.addValue,
+            labelText: 'First Name',
+            errorText: snapshot.error as String?,
+          );
+        });
+  }
+}
+
+class LastNameInputFiled extends StatelessWidget {
+  const LastNameInputFiled({
+    Key? key,
+    required this.bloc,
+  }) : super(key: key);
+
+  final SignUpBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<String?>(
+        stream: bloc.lastName.obs$,
+        builder: (context, snapshot) {
+          return InputField(
+            onChanged: bloc.lastName.addValue,
+            labelText: 'Last Name',
+            errorText: snapshot.error as String?,
+          );
+        });
+  }
+}
+
+class PasswordInputField extends StatelessWidget {
+  const PasswordInputField({
+    Key? key,
+    required this.bloc,
+  }) : super(key: key);
+
+  final SignUpBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<String?>(
+        stream: bloc.password.obs$,
+        builder: (context, snapshot) {
+          return StreamBuilder<bool>(
+              stream: bloc.passwordObscure.obs$,
+              initialData: true,
+              builder: (context, obscureSnap) {
+                return InputField(
+                  errorText: snapshot.error as String?,
+                  onChanged: bloc.password.addValue,
+                  suffixIcon: InkWell(
+                    child: !obscureSnap.data!
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
+                    onTap: () {
+                      bloc.passwordObscure.addValue(!obscureSnap.data!);
+                    },
+                  ),
+                  obscureText: obscureSnap.data,
+                  hintText: 'eg.adA12@bv',
+                  labelText: 'Password',
+                );
+              });
+        });
+  }
+}
+
+class EmailInputField extends StatelessWidget {
+  const EmailInputField({
+    Key? key,
+    required this.bloc,
+  }) : super(key: key);
+
+  final SignUpBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<String?>(
+        stream: bloc.email.obs$,
+        builder: (context, snapshot) {
+          return InputField(
+            onChanged: bloc.email.addValue,
+            hintText: 'for e.g., abc@xyz.com',
+            labelText: 'Email ID',
+            errorText: snapshot.error as String?,
+          );
+        });
+  }
+}
+
+class RePasswordInputField extends StatelessWidget {
+  const RePasswordInputField({
+    Key? key,
+    required this.bloc,
+  }) : super(key: key);
+
+  final SignUpBloc bloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<String?>(
+        stream: bloc.password.obs$,
+        builder: (context, snapshot) {
+          return StreamBuilder<bool>(
+              stream: bloc.passwordObscure.obs$,
+              initialData: true,
+              builder: (context, obscureSnap) {
+                return InputField(
+                  errorText: snapshot.error as String?,
+                  onChanged: bloc.password.addValue,
+                  suffixIcon: InkWell(
+                    child: !obscureSnap.data!
+                        ? const Icon(Icons.visibility_off)
+                        : const Icon(Icons.visibility),
+                    onTap: () {
+                      bloc.passwordObscure.addValue(!obscureSnap.data!);
+                    },
+                  ),
+                  obscureText: obscureSnap.data,
+                  hintText: 'eg.adA12@bv',
+                  labelText: 're-enter password',
+                );
+              });
+        });
   }
 }
